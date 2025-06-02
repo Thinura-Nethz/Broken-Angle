@@ -1,0 +1,44 @@
+name: Deploy BrokenAngle Bot
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Lint Check (optional)
+        run: npm run lint || echo "Lint warnings ignored"
+
+      - name: Build (if applicable)
+        run: echo "No build step necessary" # Change if needed
+
+      - name: PM2 Startup Script (optional local/server)
+        run: |
+          npm install -g pm2
+          pm2 start index.js --name brokenangle
+        if: false # Disable this unless deploying to a self-hosted runner
+
+      - name: Deploy to Heroku (example)
+        uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: "brokenangle-app"  # Set your Heroku app name
+          heroku_email: "your-email@example.com"
+
+      # OR deploy to Render / other platforms using CLI/API here
